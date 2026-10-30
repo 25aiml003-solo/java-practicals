@@ -1,16 +1,20 @@
-# Java build output
+# Java compiler output
 *.class
+
+# Build output
 out/
 build/
 target/
 
-# IDE files
+# IDE metadata
 .idea/
 .vscode/
 *.iml
 
-# Runtime data and logs
-*.log
+# Operating-system files
+.DS_Store
+Thumbs.db
+
+# Temporary and runtime files
 *.tmp
-MiniBank/data/
-MiniBank/report/
+*.log
