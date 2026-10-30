@@ -1,27 +1,71 @@
 import java.util.Scanner;
 
 public class TollBooth {
-    private static final double CAR_FEE = 50.0;
-    private static final double TRUCK_FEE = 100.0;
-    private static final double BUS_FEE = 80.0;
+
+    // (a) Define record Vehicle
+    record Vehicle(String number, String type) {}
 
     public static void main(String[] args) {
-        try (Scanner input = new Scanner(System.in)) {
-            int cars = 0, trucks = 0, buses = 0;
-            double collection = 0;
-            System.out.println("Enter vehicle type (car/truck/bus), or done:");
-            while (true) {
-                String type = input.nextLine().trim().toLowerCase();
-                if (type.equals("done")) break;
-                switch (type) {
-                    case "car" -> { cars++; collection += CAR_FEE; }
-                    case "truck" -> { trucks++; collection += TRUCK_FEE; }
-                    case "bus" -> { buses++; collection += BUS_FEE; }
-                    default -> System.out.println("Unknown vehicle. Try again.");
-                }
+
+        Scanner sc = new Scanner(System.in);
+
+        // (b) Running total and counters
+        int totalToll = 0;
+        int bikeCount = 0;
+        int carCount = 0;
+        int truckCount = 0;
+
+        while (true) {
+
+            System.out.print("Enter vehicle number (or done to finish): ");
+            String number = sc.next();
+
+            if (number.equalsIgnoreCase("done")) {
+                break;
             }
-            System.out.println("Cars: " + cars + ", Trucks: " + trucks + ", Buses: " + buses);
-            System.out.printf("Total collection: Rs. %.2f%n", collection);
+
+            System.out.print("Enter vehicle type (bike/car/truck): ");
+            String type = sc.next().toLowerCase();
+
+            Vehicle vehicle = new Vehicle(number, type);
+
+            // (c) Switch expression for toll
+            int toll = switch (vehicle.type()) {
+                case "bike" -> {
+                    bikeCount++;
+                    yield 20;
+                }
+                case "car" -> {
+                    carCount++;
+                    yield 50;
+                }
+                case "truck" -> {
+                    truckCount++;
+                    yield 150;
+                }
+                default -> {
+                    System.out.println("Invalid vehicle type!");
+                    yield 0;
+                }
+            };
+
+            totalToll += toll;
         }
+
+        // (d) Find most frequent type
+        String mostFrequent;
+
+        if (bikeCount >= carCount && bikeCount >= truckCount) {
+            mostFrequent = "bike";
+        } else if (carCount >= bikeCount && carCount >= truckCount) {
+            mostFrequent = "car";
+        } else {
+            mostFrequent = "truck";
+        }
+
+        System.out.println("\nTotal toll: " + totalToll);
+        System.out.println("Most frequent: " + mostFrequent);
+
+        sc.close();
     }
 }
