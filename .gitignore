@@ -1,0 +1,16 @@
+# Java build output
+*.class
+out/
+build/
+target/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# Runtime data and logs
+*.log
+*.tmp
+MiniBank/data/
+MiniBank/report/
