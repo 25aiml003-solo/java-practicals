@@ -1,31 +1,82 @@
 public class Thermostat {
-    private static final int MIN_TEMPERATURE = 16;
-    private static final int MAX_TEMPERATURE = 30;
-    private static final int DEFAULT_TEMPERATURE = 22;
-    private static int activeCount;
-    private final String location;
+
+    // Private data members
+    private String location;
     private int temperature;
 
-    public Thermostat(String location) { this(location, DEFAULT_TEMPERATURE); }
-    public Thermostat(String location, int temperature) {
+    // Constants
+    private static final int MIN = 16;
+    private static final int MAX = 30;
+
+    // Static variable
+    private static int activeCount = 0;
+
+    // Constructor with location and start temperature
+    public Thermostat(String location, int startTemp) {
         this.location = location;
-        this.temperature = temperature >= MIN_TEMPERATURE && temperature <= MAX_TEMPERATURE
-                ? temperature : DEFAULT_TEMPERATURE;
+
+        if (startTemp >= MIN && startTemp <= MAX) {
+            this.temperature = startTemp;
+        } else {
+            this.temperature = 22;
+        }
+
         activeCount++;
     }
-    public void raise() { if (temperature < MAX_TEMPERATURE) temperature++; }
-    public void lower() { if (temperature > MIN_TEMPERATURE) temperature--; }
-    public int getTemperature() { return temperature; }
-    public static int getActiveCount() { return activeCount; }
-    public String toString() { return location + ": " + temperature + " C"; }
 
+    // Constructor with only location
+    public Thermostat(String location) {
+        this(location, 22);
+    }
+
+    // Raise temperature
+    public void raise() {
+        if (temperature < MAX) {
+            temperature++;
+        } else {
+            System.out.println("Already at maximum (30)");
+        }
+    }
+
+    // Lower temperature
+    public void lower() {
+        if (temperature > MIN) {
+            temperature--;
+        } else {
+            System.out.println("Already at minimum (16)");
+        }
+    }
+
+    // Getter for temperature
+    public int getTemperature() {
+        return temperature;
+    }
+
+    // Static getter for active count
+    public static int getActiveCount() {
+        return activeCount;
+    }
+
+    // Main method
     public static void main(String[] args) {
-        Thermostat livingRoom = new Thermostat("Living Room");
-        Thermostat bedroom = new Thermostat("Bedroom", 25);
-        livingRoom.raise();
-        bedroom.lower();
-        System.out.println(livingRoom);
-        System.out.println(bedroom);
-        System.out.println("Active thermostats: " + getActiveCount());
+
+        Thermostat t1 = new Thermostat("Living Room");
+        Thermostat t2 = new Thermostat("Bedroom", 25);
+
+        System.out.println("Raising temperature:");
+
+        for (int i = 0; i < 10; i++) {
+            t1.raise();
+            System.out.println("Temperature: " + t1.getTemperature());
+        }
+
+        System.out.println("\nLowering temperature:");
+
+        for (int i = 0; i < 20; i++) {
+            t1.lower();
+            System.out.println("Temperature: " + t1.getTemperature());
+        }
+
+        System.out.println("\nActive Thermostats: " + Thermostat.getActiveCount());
     }
 }

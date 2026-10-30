@@ -1,23 +1,85 @@
 public class ParkingLot {
-    private static final int CAPACITY = 3;
-    private int occupied;
-    public boolean park() {
-        if (occupied == CAPACITY) return false;
-        occupied++;
-        return true;
+
+    // Private data members
+    private int twoWheelers;
+    private int fourWheelers;
+
+    // Final capacities
+    private final int twoCap;
+    private final int fourCap;
+
+    // Static revenue
+    private static long revenue = 0;
+
+    // Constructor
+    public ParkingLot(int twoCap, int fourCap) {
+        this.twoCap = twoCap;
+        this.fourCap = fourCap;
+        this.twoWheelers = 0;
+        this.fourWheelers = 0;
     }
-    public boolean leave() {
-        if (occupied == 0) return false;
-        occupied--;
-        return true;
+
+    // Park vehicle
+    public void park(String type) {
+        if (type.equalsIgnoreCase("two")) {
+            if (twoWheelers < twoCap) {
+                twoWheelers++;
+                revenue += 20;
+                System.out.println("Two-wheeler parked.");
+            } else {
+                System.out.println("Full");
+            }
+        } else if (type.equalsIgnoreCase("four")) {
+            if (fourWheelers < fourCap) {
+                fourWheelers++;
+                revenue += 40;
+                System.out.println("Four-wheeler parked.");
+            } else {
+                System.out.println("Full");
+            }
+        } else {
+            System.out.println("Invalid vehicle type.");
+        }
     }
-    public void display() { System.out.println("Occupied: " + occupied + "/" + CAPACITY); }
+
+    // Vehicle leaves
+    public void leave(String type) {
+        if (type.equalsIgnoreCase("two")) {
+            if (twoWheelers > 0) {
+                twoWheelers--;
+                System.out.println("Two-wheeler left.");
+            }
+        } else if (type.equalsIgnoreCase("four")) {
+            if (fourWheelers > 0) {
+                fourWheelers--;
+                System.out.println("Four-wheeler left.");
+            }
+        }
+    }
+
+    // Main method
     public static void main(String[] args) {
-        ParkingLot lot = new ParkingLot();
-        System.out.println("Park: " + lot.park());
-        System.out.println("Park: " + lot.park());
-        lot.display();
-        System.out.println("Leave: " + lot.leave());
-        lot.display();
+
+        ParkingLot lot = new ParkingLot(2, 2);
+
+        lot.park("two");
+        lot.park("two");
+        lot.park("two");      // Full
+
+        lot.park("four");
+        lot.park("four");
+        lot.park("four");     // Full
+
+        lot.leave("two");
+        lot.leave("four");
+
+        lot.park("two");
+        lot.park("four");
+
+        System.out.println("\nFinal Occupancy:");
+        System.out.println("Two-Wheelers: " + lot.twoWheelers);
+        System.out.println("Four-Wheelers: " + lot.fourWheelers);
+
+        System.out.println("Total Revenue: ₹" + ParkingLot.revenue);
     }
 }
