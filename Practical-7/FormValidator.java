@@ -3,38 +3,125 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-@Retention(RetentionPolicy.RUNTIME) @Target(ElementType.FIELD) @interface NotBlank {}
-@Retention(RetentionPolicy.RUNTIME) @Target(ElementType.FIELD) @interface MaxLength { int value(); }
-class SignupForm {
-    @NotBlank @MaxLength(20) String name;
-    @NotBlank @MaxLength(30) String email;
-    @NotBlank @MaxLength(15) String password;
-    SignupForm(String name,String email,String password){this.name=name;this.email=email;this.password=password;}
+
+// @NotBlank annotation
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+@interface NotBlank {
 }
+
+// @MaxLength annotation
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+@interface MaxLength {
+    int value();
+}
+
+// SignupForm class
+class SignupForm {
+
+    @NotBlank
+    @MaxLength(20)
+    String name;
+
+    @NotBlank
+    @MaxLength(30)
+    String email;
+
+    @NotBlank
+    @MaxLength(15)
+    String password;
+
+    SignupForm(String name, String email, String password) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
+}
+
+// Validator class
 class FormChecker {
-    static List<String> validate(Object object) {
-        List<String> errors=new ArrayList<>();
-        for(Field field:object.getClass().getDeclaredFields()){
+
+    public static List<String> validate(Object obj) {
+
+        List<String> errors = new ArrayList<>();
+
+        Class<?> clazz = obj.getClass();
+
+        for (Field field : clazz.getDeclaredFields()) {
+
             field.setAccessible(true);
+
             try {
-                Object raw=field.get(object); String value=raw==null?"":raw.toString();
-                if(field.isAnnotationPresent(NotBlank.class)&&value.isBlank()) errors.add(field.getName()+" must not be blank");
-                MaxLength limit=field.getAnnotation(MaxLength.class);
-                if(limit!=null&&value.length()>limit.value()) errors.add(field.getName()+" exceeds "+limit.value()+" characters");
-            } catch(IllegalAccessException exception){errors.add("Cannot read "+field.getName());}
+                Object value = field.get(obj);
+                String text = value == null ? "" : value.toString();
+
+                // Check @NotBlank
+                if (field.isAnnotationPresent(NotBlank.class)) {
+
+                    if (text.trim().isEmpty()) {
+                        errors.add(field.getName() + " must not be blank");
+                    }
+                }
+
+                // Check @MaxLength
+                if (field.isAnnotationPresent(MaxLength.class)) {
+
+                    MaxLength annotation =
+                            field.getAnnotation(MaxLength.class);
+
+                    int max = annotation.value();
+
+                    if (text.length() > max) {
+                        errors.add(field.getName()
+                                + " must not exceed "
+                                + max + " characters");
+                    }
+                }
+
+            } catch (IllegalAccessException e) {
+                errors.add("Error reading field: " + field.getName());
+            }
         }
+
         return errors;
     }
 }
+
+// Main class
 public class FormValidator {
-    public static void main(String[] args){
-        try(Scanner input=new Scanner(System.in)){
-            System.out.print("Name: ");String name=input.nextLine();
-            System.out.print("Email: ");String email=input.nextLine();
-            System.out.print("Password: ");String password=input.nextLine();
-            List<String> errors=FormChecker.validate(new SignupForm(name,email,password));
-            if(errors.isEmpty())System.out.println("Form is valid.");
-            else errors.forEach(System.out::println);
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("===== Signup Form =====");
+
+        System.out.print("Enter Name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Enter Email: ");
+        String email = sc.nextLine();
+
+        System.out.print("Enter Password: ");
+        String password = sc.nextLine();
+
+        SignupForm form = new SignupForm(name, email, password);
+
+        List<String> errors = FormChecker.validate(form);
+
+        System.out.println("\n===== Validation Result =====");
+
+        if (errors.isEmpty()) {
+            System.out.println("Form is valid!");
+        } else {
+            System.out.println("Form has errors:");
+
+            for (String error : errors) {
+                System.out.println("- " + error);
+            }
         }
+
+        sc.close();
     }
 }
